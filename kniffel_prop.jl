@@ -1,7 +1,10 @@
 #goal is to calculate possibilities for certain cases which are connected to certain points
 
+#Initializing
+using DelimitedFiles
+
 #generating all 252 possible cases - this is allready in the casepointsheet.dat
-cases252 = ones(Int,252,5)
+cases252 = ones(Int8,252,5)
 k,l,m,n,o = 1,1,1,1,1
 for i in 2:252
         k = k+1
@@ -35,6 +38,10 @@ for i in 2:252
         cases252[i,5] = o
 end
 show(stdout, "text/plain", cases252)
+
+open("cases252.txt","w") do io
+        writedlm(io,cases252)
+end
 
 #random stuff - need a throw to compare
 throw1 = sort(rand(1:6,5))
