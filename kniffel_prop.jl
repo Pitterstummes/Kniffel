@@ -3,51 +3,56 @@
 #Initializing
 using DelimitedFiles
 
+#functions
 #generating all 252 possible cases - this is allready in the casepointsheet.dat
-cases252 = ones(Int8,252,5)
-k,l,m,n,o = 1,1,1,1,1
-for i in 2:252
-        k = k+1
-        if k==7
-                l=l+1
-                k=l
-        end
-        if l==7
-                m=m+1
-                l=m
-                k=l
-        end
-        if m==7
-                n=n+1
-                m=n
-                l=m
-                k=l
-        end
-        if n==7
-                o=o+1
-                n=o
-                m=n
-                l=m
-                k=l
-        end
+function generate_5dice_all_possibilities(writetofile_bool) #generate possible cases, if writetofile_bool, write to cases252.txt
+        global cases252 = ones(Int8,252,5)
+        k,l,m,n,o = 1,1,1,1,1
+        for i in 2:252
+                k = k+1
+                if k==7
+                        l=l+1
+                        k=l
+                end
+                if l==7
+                        m=m+1
+                        l=m
+                        k=l
+                end
+                if m==7
+                        n=n+1
+                        m=n
+                        l=m
+                        k=l
+                end
+                if n==7
+                        o=o+1
+                        n=o
+                        m=n
+                        l=m
+                        k=l
+                end
 
-        cases252[i,1] = k
-        cases252[i,2] = l
-        cases252[i,3] = m
-        cases252[i,4] = n
-        cases252[i,5] = o
+                cases252[i,1] = k
+                cases252[i,2] = l
+                cases252[i,3] = m
+                cases252[i,4] = n
+                cases252[i,5] = o
+        end
+        if writetofile_bool
+                open("cases252.txt","w") do io
+                        writedlm(io,cases252)
+                end
+        end
 end
-show(stdout, "text/plain", cases252)
 
-open("cases252.txt","w") do io
-        writedlm(io,cases252)
-end
+showall(variable) = show(stdout,"text/plain",variable)
 
 #random stuff - need a throw to compare
 throw1 = sort(rand(1:6,5))
 println(throw1)
 prop252 = zeros(252)
-yyy = sallsaved
+yyy = prop252
 
 #calculating the propability array to get to yyy252 within the next throwing round - dismissed
 for j in 1:252
@@ -132,7 +137,8 @@ show(stdout, "text/plain", cases252)
 writedlm("throwcount252.dat",throwcount252)
 
 #generating the subtraction of 2 throwcounts
-prop252 = zeros(6,1)
+readmatexpand = readdlm("old\\casepointsheetexpandnoheader.dat")
+prop252 = zeros(252,1)
 for n in 1:1
         intermed = zeros(Int,1,6)
         for i in 1:252
