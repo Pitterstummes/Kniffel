@@ -4,3 +4,5 @@ function firstthrow() #first throw: Output 5 element vector with numbers from 1 
 end
 
 Threads.nthreads()
+
+@time firstthrow()
