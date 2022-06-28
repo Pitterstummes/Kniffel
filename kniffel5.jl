@@ -1,5 +1,6 @@
 #Initializing
 using DelimitedFiles
+using Plots
 #cd("C:\\Users\\StandardUser\\Documents\\Julia\\Kniffel")
 
 #Loading 
@@ -26,7 +27,27 @@ function getcase_d(throw) #getcase: Output the actual of all 252 cases for the i
             break
         end
     end
-    caseline = casepoint[case,:]
+    #caseline = casepoint[case,:]
     #println(case, caseline)
-    return case, caseline
+    return case#, caseline
 end
+
+#testing
+getcase_d(firstthrow())
+
+#getpropbytesting
+casecount = zeros(Int64,252)
+n = 10000000
+for i in 1:n
+    casecount[getcase_d(firstthrow())] += 1
+    if mod(i,n/10) == 0
+        print(round(i/n,digits=1)*100)
+        println("%")
+    end
+end
+sum(casecount)
+
+#plotting
+plot(1:252,casecount./1e7)
+unique(round.(casecount./1e6,digits=3))
+
