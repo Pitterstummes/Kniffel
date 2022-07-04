@@ -35,19 +35,78 @@ end
 #testing
 getcase_d(firstthrow())
 
-#getpropbytesting
-casecount = zeros(Int64,252)
-n = 10000000
-for i in 1:n
-    casecount[getcase_d(firstthrow())] += 1
-    if mod(i,n/10) == 0
-        print(round(i/n,digits=1)*100)
-        println("%")
+function getprop252(actualthrow)
+    actualcount = throw_count(actualthrow)
+    prop252 = zeros(252)
+    intermed = zeros(Int8,6)
+    for i = 1:252
+        availablethrows = 0
+        for j = 1:6
+            intermed[j] = actualcount[j]-casepoint[i,5+j]
+            if intermed[j] > 0
+                availablethrows += intermed[j]
+            end
+        end
+        if availablethrows == 0
+            prop252[i] = 1
+        elseif availablethrows == 1
+            prop252[i] = 1/6
+        elseif availablethrows == 2
+            if -2 in intermed
+                    prop252[i] = 1/36
+            else
+                    prop252[i] = 1/18
+            end
+        elseif availablethrows == 3
+            if -3 in intermed
+                    prop252[i] = 1/216
+            elseif -2 in intermed
+                    prop252[i] = 1/72
+            else
+                    prop252[i] = 1/36
+            end
+        elseif availablethrows == 4
+            if -4 in intermed
+                    prop252[i] = 1/1296
+            elseif -3 in intermed
+                    prop252[i] = 1/324
+            elseif -2 in intermed && -1 ∉ intermed
+                    prop252[i] = 1/216
+            elseif -2 in intermed && -1 in intermed
+                    prop252[i] = 1/108
+            else
+                    prop252[i] = 1/54
+            end
+        elseif availablethrows == 5
+            if -5 in intermed
+                    prop252[i] = 1/7776
+            elseif -4 in intermed
+                    prop252[i] = 5/7776
+            elseif -3 in intermed && -2 in intermed
+                    prop252[i] = 10/7776
+            elseif -3 in intermed && -1 in intermed
+                    prop252[i] = 20/7776
+            elseif count(==(2), intermed) == 2
+                    prop252[i] = 30/7776
+            elseif count(==(2), intermed) == 1
+                    prop252[i] = 60/7776
+            else
+                    prop252[i] = 20/1296
+            end   
+        end
     end
+    return prop252
+    #return nothing
 end
-sum(casecount)
 
-#plotting
-plot(1:252,casecount./1e7)
-unique(round.(casecount./1e6,digits=3))
+propmatrix = zeros(252,252)
 
+for i = 1:252
+    propmatrix[:,i] = getprop252(casepoint[i,1:5])
+end
+
+
+propmatrix
+open("propmatrix.txt","w") do io
+    writedlm(io,propmatrix)
+end
