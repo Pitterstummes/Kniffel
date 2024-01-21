@@ -1,3 +1,5 @@
+import random
+
 class Scoreboard:
     def __init__(self):
         self.fields = {
@@ -24,6 +26,7 @@ class Scoreboard:
             "total": None           # 20 Total score
         }
         self.freefields = [1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18] # Indices of the free fields
+        self.goalpoints = [3, 6, 9, 12, 15, 18, 12, 22, 18, 24, 30, 25, 40, 50, 22] # Goal points for the free fields
 
     def update_score(self, field, points):
         # Update the score for a specific field
@@ -52,10 +55,10 @@ class Dice:
     def __init__(self):
         self.values = []  # List to store the values of the dice
 
-    def roll(self):
+    def first_roll(self):
         # Roll the dice to get random values
-        pass
-        
+        random_integers = [random.randint(1, 6) for _ in range(5)]
+        self.values = random_integers
 
     def keep(self, indices):
         # Keep the dice at the specified indices
@@ -65,6 +68,81 @@ class Dice:
         # Reroll the dice at the specified indices
         pass
 
+    def calc_score_1_to_6(self, values, field):
+        # Calculate the score for scoreboard indices 1 to 6: ones till sixes
+        return sum(value for value in values if value == field)
+
+    def calc_score_10(self, values):
+        # Calculate the score for scoreboard index 10: one pair
+        pairs = []
+        for value in set(values):
+            if values.count(value) >= 2:
+                pairs.append(value)
+        if pairs:
+            highest_pair = max(pairs)
+            return highest_pair * 2
+        else:
+            return 0
+        
+    def calc_score_11(self, values):
+        # Calculate the score for scoreboard index 11: two pairs
+        pairs = []
+        for value in set(values):
+            if values.count(value) >= 2:
+                pairs.append(value)
+        if len(pairs) >= 2:
+            return sum(pairs) * 2
+        else:
+            return 0
+        
+    def calc_score_12(self, values):
+        # Calculate the score for scoreboard index 12: three of a kind
+        for value in set(values):
+            if values.count(value) >= 3:
+                return value * 3
+        return 0
+    
+    def calc_score_13(self, values):
+        # Calculate the score for scoreboard index 13: four of a kind
+        for value in set(values):
+            if values.count(value) >= 4:
+                return value * 4
+        return 0
+    
+    def calc_score_14(self, values):
+        # Calculate the score for scoreboard index 14: full house
+        for value in set(values):
+            if values.count(value) == 3:
+                for value2 in set(values):
+                    if value2 != value and values.count(value2) == 2:
+                        return 30
+        return 0
+    
+    def calc_score_15(self, values):
+        # Calculate the score for scoreboard index 15: small street
+        if set(values) in [{1, 2, 3, 4}, {2, 3, 4, 5}, {3, 4, 5, 6}]:
+            return 25
+        else:
+            return 0
+        
+    def calc_score_16(self, values):
+        # Calculate the score for scoreboard index 16: big street
+        if set(values) in [{1, 2, 3, 4, 5}, {2, 3, 4, 5, 6}]:
+            return 40
+        else:
+            return 0
+        
+    def calc_score_17(self, values):
+        # Calculate the score for scoreboard index 17: kniffel
+        for value in set(values):
+            if values.count(value) == 5:
+                return 50
+        return 0
+    
+    def calc_score_18(self, values):
+        # Calculate the score for scoreboard index 18: chance
+        return sum(values)
+    
 
 class Game:
     def __init__(self):
@@ -96,6 +174,11 @@ class Game:
 
     def write_points_to_scoreboard(self):
         # Write the points to the scoreboard
+        # Implement your logic here
+        pass
+
+    def print_scoreboard(self):
+        # Print the scoreboard
         # Implement your logic here
         pass
 
