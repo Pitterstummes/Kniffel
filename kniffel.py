@@ -143,6 +143,34 @@ class Dice:
         # Calculate the score for scoreboard index 18: chance
         return sum(values)
     
+    def calc_score_field(self, values, field):
+        # Calculate the score for the given values and field
+        match field:
+            case 1 | 2 | 3 | 4 | 5 | 6:  # Ones till sixes
+                return Dice.calc_score_1_to_6(values, field)
+            case 10:    # One pair
+                return Dice.calc_score_10(values)
+            case 11:    # Two pairs
+                return Dice.calc_score_11(values)
+            case 12:    # Three of a kind
+                return Dice.calc_score_12(values)
+            case 13:    # Four of a kind
+                return Dice.calc_score_13(values)
+            case 14:    # Full house
+                return Dice.calc_score_14(values)
+            case 15:    # Small street
+                return Dice.calc_score_15(values)
+            case 16:    # Big street
+                return Dice.calc_score_16(values)
+            case 17:    # Kniffel
+                return Dice.calc_score_17(values)
+            case 18:    # Chance
+                return Dice.calc_score_18(values)
+            case _:     # Invalid field
+                raise TypeError("Invalid field")
+    
+
+
 
 class Game:
     def __init__(self):
@@ -159,7 +187,7 @@ class Game:
                 # Calculate the best possible scores for all free fields
                 for field in self.scoreboard.freefields:
                     # Calculate the score for the current field
-                    score = calculate_best_score(self.dice.values, field)
+                    score = Game.calculate_best_score(self.dice.values, field)
 
                     # Update the score in the scoreboard
                     self.scoreboard.update_score(field, score)
@@ -186,3 +214,4 @@ class Game:
 # Create an instance of the game and start playing
 game = Game()
 game.play()
+
