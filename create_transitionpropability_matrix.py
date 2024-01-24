@@ -31,5 +31,5 @@ def calculate_propability_matrix(n=5, k=6):
     return transitionmatrix, states
 
 matrix, states = calculate_propability_matrix()
-# print(states, matrix, sep="\n")
+print(states, matrix, sep="\n")
 print("Done!, there are {} states".format(len(states)))
