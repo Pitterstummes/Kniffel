@@ -2,8 +2,8 @@ from itertools import combinations, combinations_with_replacement, permutations
 import numpy as np
 
 def calc_score_1_to_6(values, field):
-        # Calculate the score for scoreboard indices 1 to 6: ones till sixes
-        return sum(value for value in values if value == field)
+    # Calculate the score for scoreboard indices 1 to 6: ones till sixes
+    return sum(value for value in values if value == field)
 
 def calc_score_10(values):
     # Calculate the score for scoreboard index 10: one pair
@@ -120,13 +120,6 @@ def get_states(n=5, k=6):
         states.append(state)
     return states
 
-def count_numbers(numbers, k=6):
-    # Count the number of occurrences of each number
-    counts = [0] * k
-    for num in numbers:
-        counts[num - 1] += 1
-    return counts
-
 def get_combinations(state):
     # Get all rerolls of the state
     rerolls = []
@@ -163,12 +156,30 @@ def get_reroll_state_propability(state, rerolls, states, n=5, k=6):
         propability[-1,states.index(s)] = (1/k)**n*len(variants)
     return propability
 
+def calculate_potential(currentpoints, maxpoints, field):
+    return currentpoints / (maxpoints[field-1]**1) * currentpoints
 
+def collect_decision_parameters(input_state, fields, maxpoints, n=5, k=6):
+    states = get_states(n, k)
+    rerolls = get_combinations(input_state)
+    propabilities = get_reroll_state_propability(input_state, rerolls, states)
+    decision_score_matrix = np.zeros_like(propabilities)
+    decision_score = np.zeros(len(rerolls))
+    for i, reroll in enumerate(rerolls):
+        for j, state in enumerate(states):
+            if propabilities[i,j] != 0:
+                potential_points = 0
+                for field in fields:
+                    currentpoints = calc_score_field(state, field)
+                    potential_points += calculate_potential(currentpoints, maxpoints, field)
+                decision_score_matrix[i,j] = potential_points * propabilities[i,j]
+        decision_score[i] = np.sum(decision_score_matrix[i,:])
+        print(reroll, decision_score[i])
+    index = np.argmax(decision_score)
+    return rerolls[index]
 
-states = get_states()
-state = (1, 2, 3, 4, 5)
-rerolls = get_combinations(state)
-propability = get_reroll_state_propability(state, rerolls, states,)
-print(len(propability))
-
-    
+# find the best calculate_potential method: highest score gives the reroll
+maxpoints = [5, 10, 15, 20, 25, 30]
+openfields = [1, 2, 3, 4, 5, 6]
+reroll = collect_decision_parameters((3, 4, 4, 5, 5), openfields, maxpoints)  
+print(reroll)
