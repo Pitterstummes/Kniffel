@@ -1,5 +1,77 @@
+import random
 from itertools import combinations, combinations_with_replacement, permutations
 import numpy as np
+
+
+def init():
+    # Initialize scoreboard, textfields, freefields and decisionlists
+    scoreboard = [None] * 21
+    textfields = [
+        "Name    ",
+        "Ones    ",
+        "Twos    ",
+        "Threes  ",
+        "Fours   ",
+        "Fives   ",
+        "Sixes   ",
+        "Sum     ",
+        "Bonus   ",
+        "Total 1 ",
+        "One pair",
+        "Two pairs",
+        "Triple  ",
+        "Quadruple",
+        "Full house",
+        "Small straigth",
+        "Big straight",
+        "Kniffel ",
+        "Chance  ",
+        "Total 2 ",
+        "Total   ",
+    ]  # Text for prints
+    freefields = [1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+    maxpoints = [5, 10, 15, 20, 25, 30, 12, 22, 18, 24, 30, 25, 40, 50, 30]
+    optimizer = [0.7, 0.8, 1, 1, 1, 1, 1, 1, 1, 1, 0.8, 0.8, 1, 1, 0.5]
+    return scoreboard, textfields, freefields, maxpoints, optimizer
+
+
+def first_roll(n=5, k=6):
+    # Generate random integers for the first roll
+    return sorted((random.randint(1, k) for _ in range(n)))
+
+
+def update_scoreboard(scoreboard, field, points):
+    # Update the score for the given field
+    if scoreboard[field] is None:
+        scoreboard[field] = points
+    else:
+        scoreboard[field] += points
+    return scoreboard
+
+
+def update_freefields(freefields, field):
+    # Update the list of free fields
+    freefields.remove(field)
+    return freefields
+
+
+def calculate_scores(fields):
+    # Calculate the sum, bonus, and total scores based on the individual fields
+    fields[7] = sum(fields[1:7])
+    if fields[7] >= 63:
+        fields[8] = 37
+    else:
+        fields[8] = 0
+    fields[9] = fields[7] + fields[8]
+    fields[19] = sum(fields[10:19])
+    fields[20] = fields[9] + fields[19]
+    return fields
+
+
+def writename(name, fields):
+    # Write the name of the player
+    fields[0] = name
+    return fields
 
 
 def calc_score_1_to_6(values, field):
@@ -120,6 +192,8 @@ def calc_score_field(values, field):
             return calc_score_17(values)
         case 18:  # Chance
             return calc_score_18(values)
+        case _:  # Invalid field
+            raise TypeError("Invalid field")
 
 
 def get_states(n=5, k=6):
@@ -145,6 +219,7 @@ def get_reroll_state_propability(state, rerolls, states, n=5, k=6):
     # Calculate propabilities for each state after rerolling
     propability = np.ones((len(rerolls), len(states)))
     propability[0, :] = 0
+    state = tuple(state)
     for i, reroll in enumerate(rerolls[:-1]):
         if len(reroll) == 0:
             propability[i, states.index(state)] = 1
@@ -188,9 +263,89 @@ def collect_decision_parameters(input_state, fields, maxpoints, optimizer, n=5, 
                     )
                 decision_score_matrix[i, j] = potential_points * propabilities[i, j]
         decision_score[i] = np.sum(decision_score_matrix[i, :])
-        print(reroll, decision_score[i])
     index = np.argmax(decision_score)
     return rerolls[index]
+
+
+def reroll_state(state, reroll_dice, n=5, k=6):
+    new_roll = list(state)
+    for element in reroll_dice:
+        new_roll.remove(element)
+    while len(new_roll) < n:
+        new_roll.append(random.randint(1, k))
+    rerolled_state = tuple(sorted(tuple(new_roll)))
+    return rerolled_state
+
+
+def find_best_score(freefields, roll, maxpoints, optimizer):
+    # Find the best score for the given roll, output points and field
+    current_points = np.zeros(len(freefields))
+    potential_points = np.zeros(len(freefields))
+    for i, field in enumerate(freefields):
+        points = calc_score_field(roll, field)
+        current_points[freefields.index(field)] = points
+        potential_points[i] += calculate_potential(points, maxpoints, field, optimizer)
+    index = np.argmax(potential_points)
+    return int(current_points[index]), freefields[index]
+
+
+def run_game(
+    name="Test",
+    throws=3,
+    n=5,
+    k=6,
+    printscoreboard=True,
+    printinfo=False,
+    randomseed=False,
+):
+    if randomseed:
+        random.seed(randomseed)
+    if printinfo:
+        print(
+            "Game with", throws, "throw(s) per round and", n, "dice with", k, "sides."
+        )
+    scoreboard, textfields, freefields, maxpoints, optimizer = init()
+    writename(name, scoreboard)
+    count_round = 0
+    while count_round < 15:
+        count_round += 1
+        roll = first_roll(n, k)
+        if printinfo:
+            print("Round", count_round, ":", roll)
+        for i in range(throws - 1):
+            reroll_dice = collect_decision_parameters(
+                roll, freefields, maxpoints, optimizer
+            )
+            roll = reroll_state(roll, reroll_dice)
+            if printinfo:
+                print("Reroll", i + 1, ":", roll, "Rerolled:", reroll_dice)
+        writepoints, field = find_best_score(
+            freefields, roll, maxpoints, optimizer
+        )  # field = freefields[index]
+        if printinfo:
+            print("Wrote", writepoints, "to", textfields[field])
+        scoreboard = update_scoreboard(scoreboard, field, writepoints)
+        if writepoints == 50:
+            if scoreboard[field] > 50:
+                kniffelindex = freefields.index(17)
+                writepoints, field = find_best_score(
+                    freefields[:kniffelindex] + freefields[kniffelindex + 1 :],
+                    roll,
+                    maxpoints,
+                    optimizer,
+                )
+                if printinfo:
+                    print("Wrote", writepoints, "to", textfields[field])
+                scoreboard = update_scoreboard(scoreboard, field, writepoints)
+                freefields = update_freefields(freefields, field)
+        else:
+            freefields = update_freefields(freefields, field)
+
+    scoreboard = calculate_scores(scoreboard)
+    if printscoreboard:
+        for i, j in enumerate(scoreboard):
+            print(textfields[i] + "\t", j)
+    return scoreboard[20]
 
 
 def calculate_potential(currentpoints, maxpoints, field, optimizer):
@@ -198,13 +353,3 @@ def calculate_potential(currentpoints, maxpoints, field, optimizer):
     if field > 6:
         field = field - 3
     return currentpoints**2 / (maxpoints[field - 1] ** 1) * optimizer[field - 1]
-
-
-# find the best calculate_potential method: highest score gives the reroll
-freefields = [1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18]
-maxpoints = [5, 10, 15, 20, 25, 30, 12, 22, 18, 24, 30, 25, 40, 50, 30]
-optimizer = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.8, 1, 1, 1, 1]
-reroll = collect_decision_parameters(
-    tuple(sorted((1, 1, 2, 6, 6))), freefields, maxpoints, optimizer
-)
-print(reroll)
