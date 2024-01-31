@@ -1,0 +1,85 @@
+         2323252 function calls in 4.066 seconds
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   292974    1.121    0.000    1.121    0.000 {method 'index' of 'list' objects}
+       30    0.712    0.024    1.936    0.065 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:218(get_reroll_state_propability)
+       30    0.478    0.016    4.061    0.135 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:249(collect_decision_parameters)
+   288771    0.383    0.000    1.330    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:162(calc_score_field)
+   288771    0.295    0.000    0.295    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:351(calculate_potential)
+   234230    0.155    0.000    0.155    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:79(<genexpr>)
+   422392    0.127    0.000    0.127    0.000 {method 'count' of 'tuple' objects}
+   127488    0.125    0.000    0.392    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:77(calc_score_1_to_6)
+   138415    0.117    0.000    0.272    0.000 {built-in method builtins.sum}
+    33124    0.102    0.000    0.138    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:123(calc_score_14)
+    35116    0.088    0.000    0.121    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:149(calc_score_17)
+   220362    0.082    0.000    0.082    0.000 {method 'remove' of 'list' objects}
+    31341    0.082    0.000    0.112    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:115(calc_score_13)
+    16485    0.064    0.000    0.094    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:82(calc_score_10)
+    19489    0.030    0.000    0.030    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:133(calc_score_15)
+    93364    0.021    0.000    0.021    0.000 {built-in method builtins.len}
+     7505    0.019    0.000    0.026    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:107(calc_score_12)
+     2355    0.009    0.000    0.013    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:95(calc_score_11)
+     5722    0.009    0.000    0.009    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:141(calc_score_16)
+    32263    0.009    0.000    0.009    0.000 {method 'append' of 'list' objects}
+    10146    0.007    0.000    0.011    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:157(calc_score_18)
+    15720    0.007    0.000    0.007    0.000 {built-in method builtins.max}
+      626    0.006    0.000    0.006    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+       30    0.004    0.000    0.006    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:199(get_states)
+      626    0.003    0.000    0.011    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\core\fromnumeric.py:71(_wrapreduction)
+      626    0.002    0.000    0.013    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\core\fromnumeric.py:2177(sum)
+       30    0.001    0.000    0.001    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\core\numeric.py:67(zeros_like)
+      626    0.001    0.000    0.001    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\core\fromnumeric.py:72(<dictcomp>)
+       30    0.001    0.000    0.001    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:208(get_combinations)
+        1    0.001    0.001    4.066    4.066 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:292(run_game)
+       30    0.001    0.000    0.001    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\core\numeric.py:136(ones)
+       15    0.001    0.000    0.002    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:280(find_best_score)
+       84    0.001    0.000    0.001    0.000 C:\Users\paulk\AppData\Roaming\Python\Python311\site-packages\ipykernel\iostream.py:655(write)
+      131    0.000    0.000    0.001    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\random.py:284(randrange)
+      710    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
+       30    0.000    0.000    0.001    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:270(reroll_state)
+       45    0.000    0.000    0.000    0.000 {method 'argmax' of 'numpy.ndarray' objects}
+      131    0.000    0.000    0.000    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\random.py:235(_randbelow_with_getrandbits)
+      626    0.000    0.000    0.000    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\core\fromnumeric.py:2172(_sum_dispatcher)
+      710    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+      131    0.000    0.000    0.001    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\random.py:358(randint)
+       90    0.000    0.000    0.000    0.000 {built-in method numpy.zeros}
+       45    0.000    0.000    0.001    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\core\fromnumeric.py:1140(argmax)
+       30    0.000    0.000    0.000    0.000 {built-in method numpy.empty}
+       45    0.000    0.000    0.000    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\core\fromnumeric.py:53(_wrapfunc)
+        1    0.000    0.000    0.000    0.000 C:\Users\paulk\AppData\Roaming\Python\Python311\site-packages\zmq\sugar\socket.py:621(send)
+       45    0.000    0.000    0.001    0.000 {built-in method builtins.sorted}
+      393    0.000    0.000    0.000    0.000 {built-in method _operator.index}
+       90    0.000    0.000    0.001    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:40(<genexpr>)
+       15    0.000    0.000    0.001    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:38(first_roll)
+       84    0.000    0.000    0.000    0.000 C:\Users\paulk\AppData\Roaming\Python\Python311\site-packages\ipykernel\iostream.py:550(_is_master_process)
+       21    0.000    0.000    0.001    0.000 {built-in method builtins.print}
+       84    0.000    0.000    0.000    0.000 C:\Users\paulk\AppData\Roaming\Python\Python311\site-packages\ipykernel\iostream.py:505(parent_header)
+      174    0.000    0.000    0.000    0.000 {method 'getrandbits' of '_random.Random' objects}
+       45    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+       84    0.000    0.000    0.000    0.000 C:\Users\paulk\AppData\Roaming\Python\Python311\site-packages\ipykernel\iostream.py:577(_schedule_flush)
+      131    0.000    0.000    0.000    0.000 {method 'bit_length' of 'int' objects}
+       60    0.000    0.000    0.000    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\core\multiarray.py:1080(copyto)
+       84    0.000    0.000    0.000    0.000 {method 'write' of '_io.StringIO' objects}
+       84    0.000    0.000    0.000    0.000 {method '__exit__' of '_thread.RLock' objects}
+       84    0.000    0.000    0.000    0.000 {built-in method nt.getpid}
+       15    0.000    0.000    0.000    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:43(update_scoreboard)
+       15    0.000    0.000    0.000    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:52(update_freefields)
+       30    0.000    0.000    0.000    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\core\numeric.py:63(_zeros_like_dispatcher)
+       84    0.000    0.000    0.000    0.000 {method 'get' of '_contextvars.ContextVar' objects}
+       45    0.000    0.000    0.000    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\core\fromnumeric.py:1136(_argmax_dispatcher)
+       30    0.000    0.000    0.000    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\core\multiarray.py:85(empty_like)
+        1    0.000    0.000    0.000    0.000 C:\Users\paulk\AppData\Roaming\Python\Python311\site-packages\ipykernel\iostream.py:259(schedule)
+        1    0.000    0.000    0.000    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\threading.py:1192(is_alive)
+        1    0.000    0.000    0.000    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\cProfile.py:118(__exit__)
+        1    0.000    0.000    0.000    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:6(init)
+        1    0.000    0.000    0.000    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\threading.py:1125(_wait_for_tstate_lock)
+        1    0.000    0.000    0.000    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:58(calculate_scores)
+        1    0.000    0.000    0.000    0.000 C:\Users\paulk\AppData\Roaming\Python\Python311\site-packages\ipykernel\iostream.py:138(_event_pipe)
+        1    0.000    0.000    0.000    0.000 {method 'acquire' of '_thread.lock' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.000    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\threading.py:575(is_set)
+        1    0.000    0.000    0.000    0.000 C:\Users\paulk\AppData\Roaming\Python\Python311\site-packages\dateutil\tz\tz.py:74(utcoffset)
+        1    0.000    0.000    0.000    0.000 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport.py:71(writename)
+        1    0.000    0.000    0.000    0.000 {method 'append' of 'collections.deque' objects}

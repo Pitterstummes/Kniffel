@@ -203,8 +203,8 @@ def calculate_potential(currentpoints, maxpoints, field, optimizer):
 # find the best calculate_potential method: highest score gives the reroll
 freefields = [1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 maxpoints = [5, 10, 15, 20, 25, 30, 12, 22, 18, 24, 30, 25, 40, 50, 30]
-optimizer = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.8, 1, 1, 1, 1]
+optimizer = [1, 1, 1, 1, 1, 1, 0.4, 0.8, 1, 1, 0.5, 0.4, 1, 1, 0.5]
 reroll = collect_decision_parameters(
-    tuple(sorted((1, 1, 2, 6, 6))), freefields, maxpoints, optimizer
+    tuple(sorted((4, 3, 2, 2, 3))), freefields, maxpoints, optimizer
 )
 print(reroll)

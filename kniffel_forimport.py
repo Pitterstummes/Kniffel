@@ -31,7 +31,7 @@ def init():
     ]  # Text for prints
     freefields = [1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18]
     maxpoints = [5, 10, 15, 20, 25, 30, 12, 22, 18, 24, 30, 25, 40, 50, 30]
-    optimizer = [0.7, 0.8, 1, 1, 1, 1, 1, 1, 1, 1, 0.8, 0.8, 1, 1, 0.5]
+    optimizer = [1, 1, 1, 1, 1, 1, 0.4, 0.8, 1, 1, 0.5, 0.4, 1, 1, 0.5]
     return scoreboard, textfields, freefields, maxpoints, optimizer
 
 
@@ -319,9 +319,7 @@ def run_game(
             roll = reroll_state(roll, reroll_dice)
             if printinfo:
                 print("Reroll", i + 1, ":", roll, "Rerolled:", reroll_dice)
-        writepoints, field = find_best_score(
-            freefields, roll, maxpoints, optimizer
-        )  # field = freefields[index]
+        writepoints, field = find_best_score(freefields, roll, maxpoints, optimizer)
         if printinfo:
             print("Wrote", writepoints, "to", textfields[field])
         scoreboard = update_scoreboard(scoreboard, field, writepoints)
