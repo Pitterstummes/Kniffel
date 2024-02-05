@@ -1,0 +1,24 @@
+Simulating 100 Kniffel games using @jit...
+Compiletime: 26.6 seconds
+         30026651 function calls (28322976 primitive calls) in 36.931 seconds
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      100   10.432    0.104   10.432    0.104 c:\Users\paulk\Documents\Programmieren\Python\Kniffel\kniffel_forimport_numba.py:368(run_game)
+    82369    9.320    0.000   11.256    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\llvmlite\binding\ffi.py:188(__call__)
+643973/116346    0.716    0.000    1.004    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numba\core\ir.py:317(_rec_list_vars)
+4226397/4226377    0.566    0.000    0.695    0.000 {built-in method builtins.isinstance}
+   608406    0.419    0.000    1.091    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numba\core\event.py:243(notify)
+385721/198013    0.331    0.000    0.930    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\pprint.py:551(_safe_repr)
+524768/254689    0.285    0.000    1.126    0.000 {method 'format' of 'str' objects}
+   184414    0.254    0.000    1.376    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numba\core\event.py:209(broadcast)
+    63664    0.236    0.000    0.247    0.000 C:\Users\paulk\AppData\Roaming\Python\Python311\site-packages\colorama\win32.py:108(_winapi_test)
+    49330    0.223    0.000    0.544    0.000 {built-in method builtins.sorted}
+385721/198013    0.220    0.000    1.039    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\pprint.py:463(format)
+1006105/1004807    0.219    0.000    0.500    0.000 {built-in method builtins.getattr}
+   304203    0.211    0.000    0.278    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numba\core\event.py:270(on_end)
+   385091    0.208    0.000    0.303    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\numba\core\targetconfig.py:111(getter)
+   112497    0.192    0.000    0.428    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\llvmlite\ir\_utils.py:16(register)
+   198013    0.163    0.000    1.227    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\pprint.py:454(_repr)
+292657/122095    0.157    0.000    1.067    0.000 c:\Users\paulk\AppData\Local\Programs\Python\Python311\Lib\site-packages\llvmlite\ir\_utils.py:44(__str__)
