@@ -1,7 +1,7 @@
 import random
 from itertools import combinations_with_replacement
 import numpy as np
-from numba import jit
+from numba import jit, objmode
 import time
 
 
@@ -19,7 +19,7 @@ def init():
     optimizer = np.array(
         [1, 1, 1, 1, 1, 1, 0.4, 0.8, 1, 1, 0.5, 0.4, 1, 1, 0.5], dtype=np.float32
     )
-    return scoreboard, freefields, maxpoints, optimizer
+    return scoreboard, freefields, maxpoints  # optimizer
 
 
 @jit(nopython=True)
@@ -368,12 +368,13 @@ def find_best_score(freefields, roll, maxpoints, optimizer):
 @jit(nopython=True)
 def run_game(
     all_states,
+    optimizer,
     throws=3,
     n=5,
     k=6,
 ):
     # Run a game of Kniffel
-    scoreboard, freefields, maxpoints, optimizer = init()
+    scoreboard, freefields, maxpoints = init()  # optimizer
     count_round = 0
     while count_round < 15:
         count_round += 1
@@ -401,6 +402,11 @@ def run_game(
         else:
             freefields = update_freefields(freefields, field)
     scoreboard = calculate_scores(scoreboard)
+    if scoreboard[19] >= 616 or scoreboard[19] <= 75:
+        with objmode:
+            file = open("kniffel_scoreboard.csv", "a")
+            np.savetxt(file, scoreboard, delimiter=",")
+            file.close()
     return scoreboard[19]
 
 

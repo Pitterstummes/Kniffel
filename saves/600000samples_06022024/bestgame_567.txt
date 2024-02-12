@@ -1,0 +1,23 @@
+Ones			3
+Twos			8
+Threes			9
+Fours			16
+Fives			25
+Sixes			30
+-------------------
+Sum				91
+Bonus			37
+Total 1			128
+-------------------
+One pair		12
+Two pairs		22
+Triple			18
+Quadruple		24
+Full house		30
+Small straight	25
+Big straight	40
+Kniffel			250
+Chance			18
+-------------------
+Total 2			439
+Total			567
