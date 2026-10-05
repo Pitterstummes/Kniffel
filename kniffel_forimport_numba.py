@@ -179,37 +179,36 @@ def calc_score_18(values):
 @jit(nopython=True)
 def calc_score_field(values, field):
     # Calculate the score for the given values and field
-    match field + 1:  # due to removed name in scoreboard at index 0
-        case 1:  # Ones
-            return calc_score_1_to_6(values, 1)
-        case 2:  # Twos
-            return calc_score_1_to_6(values, 2)
-        case 3:  # Threes
-            return calc_score_1_to_6(values, 3)
-        case 4:  # Fours
-            return calc_score_1_to_6(values, 4)
-        case 5:  # Fives
-            return calc_score_1_to_6(values, 5)
-        case 6:  # Sixes
-            return calc_score_1_to_6(values, 6)
-        case 10:  # One pair
-            return calc_score_10(values)
-        case 11:  # Two pairs
-            return calc_score_11(values)
-        case 12:  # Three of a kind
-            return calc_score_12(values)
-        case 13:  # Four of a kind
-            return calc_score_13(values)
-        case 14:  # Full house
-            return calc_score_14(values)
-        case 15:  # Small straight
-            return calc_score_15(values)
-        case 16:  # Big straight
-            return calc_score_16(values)
-        case 17:  # Kniffel
-            return calc_score_17(values)
-        case 18:  # Chance
-            return calc_score_18(values)
+    if field == 1:  # Ones
+        return calc_score_1_to_6(values, 1)
+    elif field == 2:  # Twos
+        return calc_score_1_to_6(values, 2)
+    elif field == 3:  # Threes
+        return calc_score_1_to_6(values, 3)
+    elif field == 4:  # Fours
+        return calc_score_1_to_6(values, 4)
+    elif field == 5:  # Fives
+        return calc_score_1_to_6(values, 5)
+    elif field == 6:  # Sixes
+        return calc_score_1_to_6(values, 6)
+    elif field == 10:  # One pair
+        return calc_score_10(values)
+    elif field == 11:  # Two pairs
+        return calc_score_11(values)
+    elif field == 12:  # Three of a kind
+        return calc_score_12(values)
+    elif field == 13:  # Four of a kind
+        return calc_score_13(values)
+    elif field == 14:  # Full house
+        return calc_score_14(values)
+    elif field == 15:  # Small straight
+        return calc_score_15(values)
+    elif field == 16:  # Big straight
+        return calc_score_16(values)
+    elif field == 17:  # Kniffel
+        return calc_score_17(values)
+    elif field == 18:  # Chance
+        return calc_score_18(values)
 
 
 def get_states(n=5, k=6):

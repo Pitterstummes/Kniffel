@@ -46,15 +46,10 @@ optimizer = np.array(
 
 
 def do_all(ins, states=all_states, optim=optimizer):
-    # Load kniffel functions and run the game
-    from kniffel_forimport_numba import run_game
-
     return run_game(states, optim)
 
-
 if __name__ == "__main__":
-    # Run the game in parallel
-    n = 2000000
+    n = 10000
     print("Simulating", n, "Kniffel games in parallel using @jit...")
     start_time = time.time()
     iterations = [1 for _ in range(n)]
