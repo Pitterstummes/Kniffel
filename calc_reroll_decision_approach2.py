@@ -60,7 +60,7 @@ def calc_score_14(values):
 
 def calc_score_15(values):
     # Calculate the score for scoreboard index 15: small street
-    if set(values) in [{1, 2, 3, 4}, {2, 3, 4, 5}, {3, 4, 5, 6}]:
+    if any(s <= set(values) for s in ({1, 2, 3, 4}, {2, 3, 4, 5}, {3, 4, 5, 6})):
         return 25
     else:
         return 0

@@ -57,6 +57,8 @@ def update_freefields(freefields, field):
 
 def calculate_scores(fields):
     # Calculate the sum, bonus, and total scores based on the individual fields
+    # fields that were never filled (e.g. after a Kniffel joker) count as 0
+    fields[1:19] = [0 if v is None else v for v in fields[1:19]]
     fields[7] = sum(fields[1:7])
     if fields[7] >= 63:
         fields[8] = 37
@@ -132,7 +134,7 @@ def calc_score_14(values):
 
 def calc_score_15(values):
     # Calculate the score for scoreboard index 15: small street
-    if set(values) in [{1, 2, 3, 4}, {2, 3, 4, 5}, {3, 4, 5, 6}]:
+    if any(s <= set(values) for s in ({1, 2, 3, 4}, {2, 3, 4, 5}, {3, 4, 5, 6})):
         return 25
     else:
         return 0

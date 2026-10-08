@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+
+# Simulationsergebnisse und Tabellen (nicht ins Repo)
+saves/
+*.npy
+scores.txt
+avg_optimizer.txt
+kniffel_scoreboard.csv
+ANALYSE_ergebnisse.txt
+beispiele_ergebnisse.txt

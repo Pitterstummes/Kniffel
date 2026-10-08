@@ -179,6 +179,7 @@ def calc_score_18(values):
 @jit(nopython=True)
 def calc_score_field(values, field):
     # Calculate the score for the given values and field
+    field = field + 1  # fields here are 0-based (no name entry), the cases below 1-based
     if field == 1:  # Ones
         return calc_score_1_to_6(values, 1)
     elif field == 2:  # Twos

@@ -57,6 +57,8 @@ def update_freefields(freefields, field):
 
 def calculate_scores(scoreboard):
     # Calculate the sum, bonus, and total scores
+    # fields that were never filled (e.g. after a Kniffel joker) count as 0
+    scoreboard[1:19] = [0 if v is None else v for v in scoreboard[1:19]]
     scoreboard[7] = sum(scoreboard[1:7])
     if scoreboard[7] >= 63:
         scoreboard[8] = 37
@@ -132,7 +134,7 @@ def calc_score_14(values):
 
 def calc_score_15(values):
     # Calculate the score for scoreboard index 15: small straight
-    if set(values) in [{1, 2, 3, 4}, {2, 3, 4, 5}, {3, 4, 5, 6}]:
+    if any(s <= set(values) for s in ({1, 2, 3, 4}, {2, 3, 4, 5}, {3, 4, 5, 6})):
         return 25
     else:
         return 0
@@ -344,7 +346,8 @@ def calculate_potential(currentpoints, maxpoints, field, optimizer):
     return currentpoints**2 / (maxpoints[field - 1] ** 1) * optimizer[field - 1]
 
 
-run_game("Test", 3, printinfo=True, printscoreboard=True, randomseed=False)  # 47291
+if __name__ == "__main__":
+    run_game("Test", 3, printinfo=True, printscoreboard=True, randomseed=False)  # 47291
 
 ## Todo: calculate_potential so that 2,3,5,5,6 does also reroll the 6 and not only 2 and 3
 ## Todo: add the kniffel case, also add it to the reroll decision?! complicated!!
