@@ -258,6 +258,35 @@ def optimise(phases, start, minutes, joker=0, schwelle=5.0, einzel=0.2, rng=np.r
     return W, params
 
 
+def verteilungen(namen=None, joker=0, mit_optimum=True, n=N_GAMES):
+    """Score samples (same dice) for leaderboard entries and, optionally, the optimal strategy.
+    Returns {label: scores}."""
+    rows = [r for r in load() if int(r["joker"]) == joker]
+    if namen:
+        rows = [r for r in rows if r["name"] in namen]
+    res = {}
+    if mit_optimum:
+        S = KR.loese(KR.Regeln(bonus=E.BONUS, joker=joker), quiet=True)
+        res["optimal"] = S.simuliere(n, seed=SEED)[:, 0]
+    for r in sorted(rows, key=lambda r: -float(r["mittel"])):
+        W, sw, ez = entry(r["name"])
+        res[r["name"]] = score(None, W, n=n, joker=joker, schwelle=sw, einzel=ez)[0]
+    return res
+
+
+def kennzahlen(samples):
+    """Table of distribution figures per strategy."""
+    import pandas as pd
+    rows = {}
+    for name, s in samples.items():
+        rows[name] = {"Mittel": s.mean(), "Streuung": s.std(), "1 %": np.percentile(s, 1),
+                      "5 %": np.percentile(s, 5), "25 %": np.percentile(s, 25), "Median": np.median(s),
+                      "75 %": np.percentile(s, 75), "95 %": np.percentile(s, 95), "99 %": np.percentile(s, 99),
+                      "P(< 200)": np.mean(s < 200), "P(≥ 300)": np.mean(s >= 300), "P(≥ 400)": np.mean(s >= 400),
+                      "Maximum": s.max()}
+    return pd.DataFrame(rows).T
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--neu", help="Name des neuen Eintrags")
