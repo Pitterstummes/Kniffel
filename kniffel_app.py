@@ -6,7 +6,7 @@ Gleiche Tabellen und Punkte wie kniffel_engine.py (Bonus 37, Extra-Kniffel 50). 
       Danach ist wieder ein Joker erlaubt (neue Runde).
     - Ein Wuerfel nochmal: nach dem 3. Wurf einen einzelnen Wuerfel ein weiteres Mal werfen.
   Devil Deal (einmal pro Spiel), nach dem 3. Wurf (auch nach "ein Wuerfel nochmal"):
-    man sagt ein Zielfeld an, ein gewaehlter Wuerfel wird neu geworfen, es bleiben 5 Wuerfel.
+    man sagt ein Zielfeld an (nicht Chance), ein gewaehlter Wuerfel wird neu geworfen, es bleiben 5 Wuerfel.
     Win  = das Zielfeld bringt danach MEHR Punkte als vorher -> Eintrag im Zielfeld.
            Ein Kniffel ist immer ein Win mit freier Wahl (mit Extra-Kniffel, wenn schon 50 drin sind),
            ausser das Kniffel-Feld ist gestrichen. Kniffel als Ziel geht auch, wenn schon 50 drin sind.
@@ -14,7 +14,7 @@ Gleiche Tabellen und Punkte wie kniffel_engine.py (Bonus 37, Extra-Kniffel 50). 
            gestrichen wird nur, wenn nichts punktet).
 
 Zustand = (belegte Felder, Summe oben 0..63, Kniffel-50, Joker uebrig 0..NJ, Devil offen 0/1).
-Ergebnisse wie in der App: ohne alles 288,90 · nur Devil 292,82 · 2 Joker 308,81 · beides 312,78.
+Ergebnisse wie in der App: ohne alles 288,90 · nur Devil 292,74 · 2 Joker 308,81 · beides 312,67.
 
     from kniffel_app import AppRegeln, loese
     S = loese(AppRegeln(joker=2, devil=True))   # ca. 1-3 min, danach aus dem Cache
@@ -46,8 +46,8 @@ class AppRegeln:
     kniffel_extra: int = 50
 
     def name(self):
-        # "devilt" = Devil mit Zielfeld (alte Caches mit der frueheren Regel werden nicht mehr gelesen)
-        return f"app_bonus{self.bonus}_joker{self.joker}_devil{'t' if self.devil else 0}_x{self.kniffel_extra}"
+        # "devilt2" = Devil mit Zielfeld ohne Chance (alte Caches mit der frueheren Regel werden nicht mehr gelesen)
+        return f"app_bonus{self.bonus}_joker{self.joker}_devil{'t2' if self.devil else 0}_x{self.kniffel_extra}"
 
 
 def tables():
@@ -134,8 +134,8 @@ def prepare(mask, u, k, jn, dn, V, scores, bonus, extra_pts, rep, entry, fail, d
                         base += entry[j, 0, r2] if (free_ok and scores[r2, 13] == 50) else fail[j, r2]
                     best = base
                     bt = 13
-                    for t in range(15):
-                        if t == 13 or (mask >> t) & 1:
+                    for t in range(13):  # Kniffel nur ueber freie Wahl, Chance ist kein Ziel
+                        if (mask >> t) & 1:
                             continue
                         s = base
                         for y in range(6):
