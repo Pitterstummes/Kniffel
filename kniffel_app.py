@@ -6,18 +6,20 @@ Gleiche Tabellen und Punkte wie kniffel_engine.py (Bonus 37, Extra-Kniffel 50). 
       Danach ist wieder ein Joker erlaubt (neue Runde).
     - Ein Wuerfel nochmal: nach dem 3. Wurf einen einzelnen Wuerfel ein weiteres Mal werfen.
   Devil Deal (einmal pro Spiel), nach dem 3. Wurf (auch nach "ein Wuerfel nochmal"):
-    ein gewaehlter Wuerfel wird neu geworfen, es bleiben 5 Wuerfel.
-    Win  = das beste offene Feld (mit Extra-Kniffel) bringt danach MEHR Punkte als vorher -> freie Wahl.
+    man sagt ein Zielfeld an, ein gewaehlter Wuerfel wird neu geworfen, es bleiben 5 Wuerfel.
+    Win  = das Zielfeld bringt danach MEHR Punkte als vorher -> Eintrag im Zielfeld.
+           Ein Kniffel ist immer ein Win mit freier Wahl (mit Extra-Kniffel, wenn schon 50 drin sind),
+           ausser das Kniffel-Feld ist gestrichen. Kniffel als Ziel geht auch, wenn schon 50 drin sind.
     Fail = der Teufel traegt dort ein, wo man am meisten verliert (unter den punktenden Feldern;
            gestrichen wird nur, wenn nichts punktet).
 
 Zustand = (belegte Felder, Summe oben 0..63, Kniffel-50, Joker uebrig 0..NJ, Devil offen 0/1).
-Ergebnisse wie in der App: ohne alles 288,90 · nur Devil 293,14 · 2 Joker 308,81 · beides 313,16.
+Ergebnisse wie in der App: ohne alles 288,90 · nur Devil 292,82 · 2 Joker 308,81 · beides 312,78.
 
     from kniffel_app import AppRegeln, loese
     S = loese(AppRegeln(joker=2, devil=True))   # ca. 1-3 min, danach aus dem Cache
     S.erwartung()
-    S.rat([6, 6, 5, 4, 1], noch=0, belegt=["Chance"], joker=2, devil=True)
+    S.rat([4, 4, 4, 4, 1], noch=0, joker=2, devil=True)
     S.simuliere(20_000).mean()
 """
 
@@ -44,7 +46,8 @@ class AppRegeln:
     kniffel_extra: int = 50
 
     def name(self):
-        return f"app_bonus{self.bonus}_joker{self.joker}_devil{int(self.devil)}_x{self.kniffel_extra}"
+        # "devilt" = Devil mit Zielfeld (alte Caches mit der frueheren Regel werden nicht mehr gelesen)
+        return f"app_bonus{self.bonus}_joker{self.joker}_devil{'t' if self.devil else 0}_x{self.kniffel_extra}"
 
 
 def tables():
@@ -70,8 +73,9 @@ def sidx(mask, u, k, j, d, jn, dn):
 
 
 @njit(cache=True)
-def prepare(mask, u, k, jn, dn, V, scores, bonus, extra_pts, rep, entry, fail, devil, s3n, pts):
-    """Fuer (mask, u, k): bester Eintrag entry[j, d, r], Devil-Fail fail[j, r], Devil-Werte devil[j, r, v],
+def prepare(mask, u, k, jn, dn, V, scores, bonus, extra_pts, rep, entry, fail, devil, s3n, pts, entf, dtg):
+    """Fuer (mask, u, k): bester Eintrag entry[j, d, r], Devil-Fail fail[j, r], Devil-Werte devil[j, r, v]
+    (bestes Ziel dtg[j, r, v]), Eintrag in ein Feld entf[j, f, r] (ohne Devil danach),
     Wert nach dem 3. Wurf ohne weiteren Joker s3n[j, d, r], beste Punkte pts[r]."""
     extra_on = k == 1 and (mask >> 13) & 1 == 1
     for r in range(252):
@@ -105,6 +109,7 @@ def prepare(mask, u, k, jn, dn, V, scores, bonus, extra_pts, rep, entry, fail, d
                     if val > best:
                         best = val
                     if d == 0:
+                        entf[j, f, r] = val
                         if sc > 0 and val < fs:
                             fs = val
                         if val < fa:
@@ -116,16 +121,32 @@ def prepare(mask, u, k, jn, dn, V, scores, bonus, extra_pts, rep, entry, fail, d
             for r in range(252):
                 s3n[j, d, r] = entry[j, d, r]
         if dn == 2:
+            free_ok = (mask >> 13) & 1 == 0 or k == 1
             for r in range(252):
                 for v in range(6):
                     if rep[r, v, 0] < 0:
                         devil[j, r, v] = NEG
+                        dtg[j, r, v] = -1
                         continue
-                    s = 0.0
+                    base = 0.0
                     for y in range(6):
                         r2 = rep[r, v, y]
-                        s += entry[j, 0, r2] if pts[r2] > pts[r] else fail[j, r2]
-                    devil[j, r, v] = s / 6.0
+                        base += entry[j, 0, r2] if (free_ok and scores[r2, 13] == 50) else fail[j, r2]
+                    best = base
+                    bt = 13
+                    for t in range(15):
+                        if t == 13 or (mask >> t) & 1:
+                            continue
+                        s = base
+                        for y in range(6):
+                            r2 = rep[r, v, y]
+                            if scores[r2, t] > scores[r, t] and not (free_ok and scores[r2, 13] == 50):
+                                s += entf[j, t, r2] - fail[j, r2]
+                        if s > best:
+                            best = s
+                            bt = t
+                    devil[j, r, v] = best / 6.0
+                    dtg[j, r, v] = bt
                     if devil[j, r, v] > s3n[j, 1, r]:
                         s3n[j, 1, r] = devil[j, r, v]
 
@@ -215,6 +236,7 @@ def solve_level(masks, jn, dn, V, scores, bonus, extra_pts, rep, reach, t_start,
         devil = np.empty((jn, 252, 6))
         s3n = np.empty((jn, dn, 252))
         pts = np.empty(252)
+        entf = np.empty((jn, 15, 252)); dtg = np.empty((jn, 252, 6), dtype=np.int64)
         a3 = np.empty(252); a2 = np.empty(252); a1 = np.empty(252)
         k2 = np.empty(462); k1 = np.empty(462)
         opt3 = np.empty(252, dtype=np.int64); kk2 = np.empty(252, dtype=np.int64); kk1 = np.empty(252, dtype=np.int64)
@@ -224,7 +246,7 @@ def solve_level(masks, jn, dn, V, scores, bonus, extra_pts, rep, reach, t_start,
             for k in range(2):
                 if k == 1 and (mask >> 13) & 1 == 0:
                     continue
-                prepare(mask, u, k, jn, dn, V, scores, bonus, extra_pts, rep, entry, fail, devil, s3n, pts)
+                prepare(mask, u, k, jn, dn, V, scores, bonus, extra_pts, rep, entry, fail, devil, s3n, pts, entf, dtg)
                 for d in range(dn):
                     for j in range(jn):
                         has_r = j > 0
@@ -285,11 +307,12 @@ def play(jn, dn, V, scores, bonus, extra_pts, rep, t_start, t_roll, t_prob, roll
     """Ein optimales Spiel. out: [0] Punkte, [1] Neustarts, [2] Einzelwuerfe, [3] Devil benutzt, [4] Devil Win."""
     entry = np.empty((jn, dn, 252)); fail = np.empty((jn, 252)); devil = np.empty((jn, 252, 6))
     s3n = np.empty((jn, dn, 252)); pts = np.empty(252)
+    entf = np.empty((jn, 15, 252)); dtg = np.empty((jn, 252, 6), dtype=np.int64)
     a3 = np.empty(252); a2 = np.empty(252); a1 = np.empty(252); k2 = np.empty(462); k1 = np.empty(462)
     opt3 = np.empty(252, dtype=np.int64); kk2 = np.empty(252, dtype=np.int64); kk1 = np.empty(252, dtype=np.int64)
     mask = 0; u = 0; k = 0; j = jn - 1; d = dn - 1
     for turn in range(15):
-        prepare(mask, u, k, jn, dn, V, scores, bonus, extra_pts, rep, entry, fail, devil, s3n, pts)
+        prepare(mask, u, k, jn, dn, V, scores, bonus, extra_pts, rep, entry, fail, devil, s3n, pts, entf, dtg)
         while True:  # Neustarts
             has_r = j > 0
             rs = V[sidx(mask, u, k, j - 1, d, jn, dn)] if has_r else 0.0
@@ -311,6 +334,7 @@ def play(jn, dn, V, scores, bonus, extra_pts, rep, t_start, t_roll, t_prob, roll
             out[2] += 1
         # Devil, wenn er mehr bringt als eintragen
         forced = False
+        target = -1
         if d == 1:
             bv = -1
             bval = entry[j, 1, r]
@@ -320,14 +344,19 @@ def play(jn, dn, V, scores, bonus, extra_pts, rep, t_start, t_roll, t_prob, roll
                     bv = v
             if bv >= 0:
                 r0 = r
+                t = dtg[j, r, bv]
                 r = rep[r, bv, np.random.randint(6)]
                 d = 0
                 out[3] += 1
-                if pts[r] > pts[r0]:
+                free = scores[r, 13] == 50 and ((mask >> 13) & 1 == 0 or k == 1)
+                if free:
                     out[4] += 1
+                elif t != 13 and scores[r, t] > scores[r0, t]:
+                    out[4] += 1
+                    target = t
                 else:
                     forced = True
-        f = best_entry_field(mask, u, k, j, d, jn, dn, V, scores, bonus, r, forced)
+        f = target if target >= 0 else best_entry_field(mask, u, k, j, d, jn, dn, V, scores, bonus, r, forced)
         sc = scores[r, f]
         if k == 1 and (mask >> 13) & 1 == 1 and scores[r, 13] == 50:
             out[0] += extra_pts
@@ -390,7 +419,9 @@ class Loesung:
         r = T["roll_index"][tuple(sorted(wurf).count(v) for v in range(1, 7))]
         entry = np.empty((jn, dn, 252)); fail = np.empty((jn, 252)); dv = np.empty((jn, 252, 6))
         s3n = np.empty((jn, dn, 252)); pts = np.empty(252)
-        prepare(mask, u, k, jn, dn, self.V, T["scores"], float(R.bonus), float(R.kniffel_extra), T["rep"], entry, fail, dv, s3n, pts)
+        entf = np.empty((jn, 15, 252)); dtg = np.empty((jn, 252, 6), dtype=np.int64)
+        prepare(mask, u, k, jn, dn, self.V, T["scores"], float(R.bonus), float(R.kniffel_extra), T["rep"], entry, fail, dv, s3n, pts,
+                entf, dtg)
         a = j > 0 and not joker_diese_runde
         restart = self.V[self._idx(mask, u, k, j - 1, d)] if a else 0.0
         res = []
@@ -417,7 +448,7 @@ class Loesung:
             if d == 1:
                 for v in range(6):
                     if T["rep"][r, v, 0] >= 0:
-                        res.append((f"Devil Deal auf eine {v + 1}", float(dv[j, r, v])))
+                        res.append((f"Devil Deal auf eine {v + 1}, Ziel {FIELDS[dtg[j, r, v]]}", float(dv[j, r, v])))
         else:
             a3 = np.empty(252); a2 = np.empty(252); a1 = np.empty(252); k2 = np.empty(462); k1 = np.empty(462)
             o3 = np.empty(252, dtype=np.int64); kk2 = np.empty(252, dtype=np.int64); kk1 = np.empty(252, dtype=np.int64)
