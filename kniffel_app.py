@@ -7,9 +7,11 @@ Gleiche Tabellen und Punkte wie kniffel_engine.py (Bonus 37, Extra-Kniffel 50). 
     - Ein Wuerfel nochmal: nach dem 3. Wurf einen einzelnen Wuerfel ein weiteres Mal werfen.
   Devil Deal (einmal pro Spiel), nach dem 3. Wurf (auch nach "ein Wuerfel nochmal"):
     man sagt ein Zielfeld an (nicht Chance), ein gewaehlter Wuerfel wird neu geworfen, es bleiben 5 Wuerfel.
-    Win  = das Zielfeld bringt danach MEHR Punkte als vorher -> Eintrag im Zielfeld.
-           Ein Kniffel ist immer ein Win mit freier Wahl (mit Extra-Kniffel, wenn schon 50 drin sind),
-           ausser das Kniffel-Feld ist gestrichen. Kniffel als Ziel geht auch, wenn schon 50 drin sind.
+    Eingetragen wird immer automatisch (Paul, 06.11.2026):
+    Win  = das Zielfeld bringt danach MEHR Punkte als vorher -> Eintrag im Zielfeld
+           (bei Kniffel mit schon 50 im Kniffel-Feld plus 50 Extra).
+           Kniffel bei offenem Kniffel-Feld: immer 50 ins Kniffel-Feld, egal welches Ziel.
+           Ziel Kniffel mit schon 50: Win bei Kniffel, dann ins beste Feld (+50 Extra).
     Fail = der Teufel traegt dort ein, wo man am meisten verliert (unter den punktenden Feldern;
            gestrichen wird nur, wenn nichts punktet).
 
@@ -46,8 +48,8 @@ class AppRegeln:
     kniffel_extra: int = 50
 
     def name(self):
-        # "devilt2" = Devil mit Zielfeld ohne Chance (alte Caches mit der frueheren Regel werden nicht mehr gelesen)
-        return f"app_bonus{self.bonus}_joker{self.joker}_devil{'t2' if self.devil else 0}_x{self.kniffel_extra}"
+        # "devilt3" = Devil mit Zielfeld ohne Chance, automatischer Eintrag (alte Caches werden nicht mehr gelesen)
+        return f"app_bonus{self.bonus}_joker{self.joker}_devil{'t3' if self.devil else 0}_x{self.kniffel_extra}"
 
 
 def tables():
@@ -121,27 +123,35 @@ def prepare(mask, u, k, jn, dn, V, scores, bonus, extra_pts, rep, entry, fail, d
             for r in range(252):
                 s3n[j, d, r] = entry[j, d, r]
         if dn == 2:
-            free_ok = (mask >> 13) & 1 == 0 or k == 1
+            open_k = (mask >> 13) & 1 == 0
             for r in range(252):
                 for v in range(6):
                     if rep[r, v, 0] < 0:
                         devil[j, r, v] = NEG
                         dtg[j, r, v] = -1
                         continue
+                    # Kniffel bei offenem Kniffel-Feld geht immer ins Kniffel-Feld, sonst Fail ohne Zielgewinn
                     base = 0.0
                     for y in range(6):
                         r2 = rep[r, v, y]
-                        base += entry[j, 0, r2] if (free_ok and scores[r2, 13] == 50) else fail[j, r2]
+                        base += entf[j, 13, r2] if (open_k and scores[r2, 13] == 50) else fail[j, r2]
                     best = base
                     bt = 13
-                    for t in range(13):  # Kniffel nur ueber freie Wahl, Chance ist kein Ziel
-                        if (mask >> t) & 1:
+                    for t in range(14):  # Chance ist kein Ziel, Kniffel nur wenn schon 50 drin sind
+                        if t == 13 and k == 0:
+                            continue
+                        if t < 13 and (mask >> t) & 1:
                             continue
                         s = base
                         for y in range(6):
                             r2 = rep[r, v, y]
-                            if scores[r2, t] > scores[r, t] and not (free_ok and scores[r2, 13] == 50):
-                                s += entf[j, t, r2] - fail[j, r2]
+                            kn = scores[r2, 13] == 50
+                            if scores[r2, t] <= scores[r, t] or (kn and open_k):
+                                continue
+                            if t == 13:
+                                s += entry[j, 0, r2] - fail[j, r2]
+                            else:
+                                s += entf[j, t, r2] + (extra_pts if (kn and k == 1) else 0.0) - fail[j, r2]
                         if s > best:
                             best = s
                             bt = t
@@ -348,10 +358,17 @@ def play(jn, dn, V, scores, bonus, extra_pts, rep, t_start, t_roll, t_prob, roll
                 r = rep[r, bv, np.random.randint(6)]
                 d = 0
                 out[3] += 1
-                free = scores[r, 13] == 50 and ((mask >> 13) & 1 == 0 or k == 1)
-                if free:
+                # immer automatisch eintragen: Kniffel ins offene Kniffel-Feld, Win ins Ziel, sonst Fail
+                kn = scores[r, 13] == 50
+                if kn and (mask >> 13) & 1 == 0:
                     out[4] += 1
-                elif t != 13 and scores[r, t] > scores[r0, t]:
+                    target = 13
+                elif t == 13:
+                    if k == 1 and kn and scores[r0, 13] != 50:
+                        out[4] += 1  # Ziel Kniffel mit schon 50: bestes Feld
+                    else:
+                        forced = True
+                elif scores[r, t] > scores[r0, t]:
                     out[4] += 1
                     target = t
                 else:
